@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>תולדות כת "לב טהור"</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background: transparent;
+    }
+
+    /* רקע קבוע: שכבה שנצמדת לפריים הנראה ולא גולשת עם התוכן
+       "to top right" מחלק את הצבעים באופן שווה בין הפינות האלכסוניות */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(to top right, #ff0000 0%, #e4001c 33%, #b8105f 66%, #5a1ea6 100%);
+    }
+
+    #tl-hist {
+      container-type: inline-size;
+      position: relative;
+      overflow: hidden;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 36px 16px;
+      border-radius: 18px;
+      color: #fff;
+      box-sizing: border-box;
+      font-family: 'Assistant', sans-serif;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    #tl-hist *, #tl-hist *::before, #tl-hist *::after { box-sizing: border-box; }
+
+    #tl-hist .tl__title {
+      margin: 0 0 32px;
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1.3;
+      text-align: center;
+    }
+
+    /* ---------- בסיס: טור אחד ---------- */
+
+    #tl-hist .tl__list { list-style: none; margin: 0; padding: 0; position: relative; }
+
+    #tl-hist .tl__list::before {
+      content: "";
+      position: absolute;
+      top: 0; bottom: 0;
+      right: 20px;
+      width: 5px;
+      background: rgba(255, 255, 255, 0.28);
+      border-radius: 5px;
+    }
+
+    /* קו ההתקדמות: גדל עד הנקודה האחרונה שנחשפה */
+    #tl-hist .tl__progress {
+      position: absolute;
+      top: 0;
+      right: 20px;
+      width: 5px;
+      height: 0;
+      background: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+      transition: height 0.8s ease;
+      z-index: 1;
+    }
+
+    #tl-hist .tl__item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr;
+      padding-inline-start: 44px;
+      margin: 0 0 28px;
+    }
+
+    #tl-hist .tl__item:last-child { margin-bottom: 0; }
+
+    /* הנקודה: צומחת מתוך הקו (scale מ-0 למלא) */
+    #tl-hist .tl__dot {
+      --tx: 0px;
+      position: absolute;
+      top: 50%;
+      right: 11.5px;
+      width: 22px;
+      height: 22px;
+      margin-top: -11px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.25), 0 0 18px rgba(255, 255, 255, 0.7);
+      transform: translateX(var(--tx)) scale(0);
+      opacity: 0;
+      transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s ease;
+      z-index: 2;
+    }
+
+    /* מעטפת הכרטיס: אחראית על האנימציה והצל, לא על המסגרת עצמה */
+    #tl-hist .tl__card {
+      position: relative;
+      grid-column: 1;
+      margin: 0;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      opacity: 0;
+      transform: translateX(40px) scale(0.5);
+      transform-origin: right center;
+      transition: opacity 1.2s ease, transform 1.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    /* הקופסה עצמה: הרקע והמסגרת. יש בה "חור" במקום בו המשולש מתחבר,
+       כך שהמסגרת וה-tail נראים כקו אחד */
+    #tl-hist .tl__box {
+      padding: 18px 20px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 16px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      text-align: right;
+      /* שכבה 1: החור (4px רוחב, 22px גובה) בקצה הימני. שכבה 2: הכל.
+         exclude מחסר את החור מהשכבה שמתחתיו */
+      mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+      mask-size: 4px 22px, 100% 100%;
+      mask-repeat: no-repeat, no-repeat;
+      mask-position: right 0 top 50%, 0 0;
+      mask-composite: exclude, add;
+    }
+
+    /* המשולש: הבסיס נכנס 4px לתוך הקופסה (ממלא את החור), והקווים החיצוניים
+       מתחילים בדיוק בקצוות החור, כך שהם ממשיכים את המסגרת */
+    #tl-hist .tl__card::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -14px;
+      width: 18px;
+      height: 22px;
+      margin-top: -11px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 22'%3E%3Cpath d='M0 0H4L17.5 11L4 22H0Z' fill='rgba(255,255,255,0.12)'/%3E%3Cpath d='M4 0L17.5 11L4 22' fill='none' stroke='rgba(255,255,255,0.3)' stroke-width='1'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+      pointer-events: none;
+    }
+
+    #tl-hist .tl__date {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    #tl-hist .tl__text {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.55;
+    }
+
+    /* ---------- הילה לאירועים מרכזיים ----------
+       המסגרת בהירה מבפנים, והזוהר נמשך החוצה ונעלם בהדרגה */
+
+    #tl-hist .tl__item--key .tl__card {
+      box-shadow:
+        0 0 4px rgba(255, 255, 255, 0.9),
+        0 0 16px rgba(255, 255, 255, 0.6),
+        0 0 36px rgba(255, 255, 255, 0.3);
+    }
+
+    #tl-hist .tl__item--key .tl__box {
+      border-color: rgba(255, 255, 255, 0.95);
+    }
+
+    #tl-hist .tl__item--key .tl__card::after {
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 22'%3E%3Cpath d='M0 0H4L17.5 11L4 22H0Z' fill='rgba(255,255,255,0.18)'/%3E%3Cpath d='M4 0L17.5 11L4 22' fill='none' stroke='rgba(255,255,255,0.95)' stroke-width='1'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+      filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.6));
+    }
+
+    /* ---------- מצב גלוי (הסקריפט) ----------
+       ההשהיה (--stagger) נקבעת בסקריפט: 100ms בין כרטיסים שנראים יחד.
+       הכרטיס מתחיל אחרי שהנקודה כבר החלה לצמוח. */
+
+    #tl-hist .tl__item.is-visible .tl__dot {
+      opacity: 1;
+      transform: translateX(var(--tx)) scale(1);
+      transition-delay: var(--stagger, 0ms);
+    }
+
+    #tl-hist .tl__item.is-visible .tl__card {
+      opacity: 1;
+      transform: none;
+      transition-delay: calc(var(--stagger, 0ms) + 600ms);
+    }
+
+    /* ---------- מכשירים עם עכבר ---------- */
+
+    @media (pointer: fine) {
+      #tl-hist { padding: 48px 24px; border-radius: 24px; }
+      #tl-hist .tl__title { font-size: 36px; }
+    }
+
+    /* ---------- שני טורים (מופעל ע"י הסקריפט: עכבר ורוחב מספיק) ---------- */
+
+    #tl-hist.tl--desk .tl__list::before,
+    #tl-hist.tl--desk .tl__progress {
+      right: 50%;
+      width: 3px;
+      border-radius: 3px;
+      transform: translateX(50%);
+    }
+
+    #tl-hist.tl--desk .tl__item {
+      position: absolute;
+      left: 0;
+      right: 0;
+      margin: 0;
+      padding: 0;
+      display: block;
+    }
+
+    #tl-hist.tl--desk .tl__dot {
+      --tx: 50%;
+      right: 50%;
+      width: 16px;
+      height: 16px;
+      margin-top: -8px;
+    }
+
+    #tl-hist.tl--desk .tl__card {
+      width: calc(50% - 20px);
+    }
+
+    #tl-hist.tl--desk .tl__box {
+      padding: 18px 22px;
+    }
+
+    /* כרטיס משמאל לקו: הקו מימין לו, והוא יוצא ממנו שמאלה */
+    #tl-hist.tl--desk .tl__item[data-side="l"] .tl__card {
+      margin-left: 0;
+      margin-right: auto;
+      transform: translateX(40px) scale(0.5);
+      transform-origin: right center;
+    }
+
+    /* כרטיס מימין לקו: הקו משמאל לו, והוא יוצא ממנו ימינה */
+    #tl-hist.tl--desk .tl__item[data-side="r"] .tl__card {
+      margin-left: auto;
+      margin-right: 0;
+      transform: translateX(-40px) scale(0.5);
+      transform-origin: left center;
+    }
+
+    /* העברת החור והמשולש לצד השמאלי של כרטיסים שמימין לקו */
+    #tl-hist.tl--desk .tl__item[data-side="r"] .tl__box {
+      mask-position: left 0 top 50%, 0 0;
+    }
+
+    #tl-hist.tl--desk .tl__item[data-side="r"] .tl__card::after {
+      right: auto;
+      left: -14px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 22'%3E%3Cpath d='M18 0H14L0.5 11L14 22H18Z' fill='rgba(255,255,255,0.12)'/%3E%3Cpath d='M14 0L0.5 11L14 22' fill='none' stroke='rgba(255,255,255,0.3)' stroke-width='1'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+    }
+
+    #tl-hist.tl--desk .tl__item--key[data-side="r"] .tl__card::after {
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 22'%3E%3Cpath d='M18 0H14L0.5 11L14 22H18Z' fill='rgba(255,255,255,0.18)'/%3E%3Cpath d='M14 0L0.5 11L14 22' fill='none' stroke='rgba(255,255,255,0.95)' stroke-width='1'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+      filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.6));
+    }
+
+    #tl-hist.tl--desk .tl__date { font-size: 1.3rem; }
+    #tl-hist.tl--desk .tl__text { font-size: 1.15rem; }
+
+    #tl-hist.tl--desk .tl__item.is-visible .tl__card {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ---------- הפחתת תנועה ---------- */
+
+    @media (prefers-reduced-motion: reduce) {
+      #tl-hist .tl__card,
+      #tl-hist .tl__dot,
+      #tl-hist .tl__progress { transition: none !important; }
+      #tl-hist .tl__card { opacity: 1; transform: none; }
+      #tl-hist .tl__dot { opacity: 1; transform: translateX(var(--tx)) scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+<section id="tl-hist" aria-label="ציר זמן">
+  <h2 class="tl__title">תולדות כת "לב טהור"</h2>
+
+  <ol class="tl__list">
+    <span class="tl__progress" aria-hidden="true"></span>
+
+    <li class="tl__item tl__item--key">
+      <span class="tl__dot" aria-hidden="true"></span>
+      <article class="tl__card">
+        <div class="tl__box">
+          <time class="tl__date">1988</time>
+          <p class="tl__text">הכת נוסדת ע"י שלמה הלברנץ בירושלים</p>
+        </div>
+      </article>
+    </li>
+
+    <li class="tl__item">
+      <span class="tl__dot" aria-hidden="true"></span>
+      <article class="tl__card">
+        <div class="tl__box">
+          <time class="tl__date">שנות ה-90</time>
+          <p class="tl__text">הכת מהגרת לארה״ב</p>
+        </div>
+      </article>
+    </li>
+
+    <li class="tl__item">
+      <span class="tl__dot" aria-hidden="true"></span>
+      <article class="tl__card">
+        <div class="tl__box">
+          <time class="tl__date">שנות ה-2000</time>
+          <p class="tl__text">הכת מהגרת לקנדה</p>
+        </div>
+      </article>
+    </li>
+
+    <li class="tl__item">
+      <span class="tl__dot" aria-hidden="true"></span>
+      <article class="tl__card">
+        <div class="tl__box">
+          <time class="tl__date">2013</time>
+          <p class="tl__text">אנשי הכת מהגרים לגואטמלה</p>
+        </div>
+      </article>
+    </li>
+
+    <li class="tl__item">
+      <span class="tl__dot" aria-hidden="true"></span>
+      <article class="tl__card">
+        <div class="tl__box">
+          <time class="tl__date">2017</time>
+          <p class="tl__text">חלק מאנשי הכת מהגרים למקסיקו</p>
+        </div>
+      </article>
+    </li>
+
+    <li class="tl__item tl__item--key">
+      <span class="tl__dot" aria-hidden="true"></span>
+      <article class="tl__card">
+        <div class="tl__box">
+          <time class="tl__date">8 ביולי 2017</time>
+          <p class="tl__text">מנהיג הכת מת בטביעה, בנו נחמן נכנס תחתיו ומקצין את הנהלים</p>
+        </div>
+      </article>
+    </li>
+
+    <li class="tl__item">
+      <span class="tl__dot" aria-hidden="true"></span>
+      <article class="tl__card">
+        <div class="tl__box">
+          <time class="tl__date">נובמבר 2018</time>
+          <p class="tl__text">אחותו של נחמן בורחת מהכת בגואטמלה, מגיעה לארה״ב ופועלת לחלץ את ילדיה</p>
+        </div>
+      </article>
+    </li>
+
+    <li class="tl__item tl__item--key">
+      <span class="tl__dot" aria-hidden="true"></span>
+      <article class="tl__card">
+        <div class="tl__box">
+          <time class="tl__date">8 בדצמבר 2018</time>
+          <p class="tl__text">אירוע חטיפת שני הילדים מניו-יורק למקסיקו</p>
+        </div>
+      </article>
+    </li>
+
+    <li class="tl__item">
+      <span class="tl__dot" aria-hidden="true"></span>
+      <article class="tl__card">
+        <div class="tl__box">
+          <time class="tl__date">18 בדצמבר 2018</time>
+          <p class="tl__text">פשיטת משטרת מקסיקו על המתחם ומעצר הבכירים בכת בעקבות החטיפה</p>
+        </div>
+      </article>
+    </li>
+
+    <li class="tl__item tl__item--key">
+      <span class="tl__dot" aria-hidden="true"></span>
+      <article class="tl__card">
+        <div class="tl__box">
+          <time class="tl__date">27 בדצמבר 2018</time>
+          <p class="tl__text">נחמן הלברנץ מגורש ממקסיקו לארה״ב ונעצר על ידי סוכני FBI בנמל התעופה JFK</p>
+        </div>
+      </article>
+    </li>
+
+    <li class="tl__item">
+      <span class="tl__dot" aria-hidden="true"></span>
+      <article class="tl__card">
+        <div class="tl__box">
+          <time class="tl__date">מרץ 2019</time>
+          <p class="tl__text">הלברנץ יוזם ניסיון חטיפה נוסף של הנערה בעודו במעצר, אך נכשל</p>
+        </div>
+      </article>
+    </li>
+
+    <li class="tl__item">
+      <span class="tl__dot" aria-hidden="true"></span>
+      <article class="tl__card">
+        <div class="tl__box">
+          <time class="tl__date">מרץ 2021</time>
+          <p class="tl__text">ניסיון חטיפה שלישי מסוכל</p>
+        </div>
+      </article>
+    </li>
+
+    <li class="tl__item">
+      <span class="tl__dot" aria-hidden="true"></span>
+      <article class="tl__card">
+        <div class="tl__box">
+          <time class="tl__date">נובמבר 2021</time>
+          <p class="tl__text">נחמן הלברנץ וסגנו מאיר רוזמן מורשעים בבית המשפט בניו-יורק בכל 6 סעיפי האישום שהוגשו נגדם</p>
+        </div>
+      </article>
+    </li>
+
+    <li class="tl__item">
+      <span class="tl__dot" aria-hidden="true"></span>
+      <article class="tl__card">
+        <div class="tl__box">
+          <time class="tl__date">אפריל 2022</time>
+          <p class="tl__text">גזר דינם של הלברנץ ורוזמן נחרץ: 12 שנות מאסר בפועל ועוד 5 על תנאי</p>
+        </div>
+      </article>
+    </li>
+
+    <li class="tl__item tl__item--key">
+      <span class="tl__dot" aria-hidden="true"></span>
+      <article class="tl__card">
+        <div class="tl__box">
+          <time class="tl__date">20 בדצמבר 2024</time>
+          <p class="tl__text">משטרת גואטמלה פושטת על מתחם הכת ומחלצת 160 ילדים ו-40 נשים</p>
+        </div>
+      </article>
+    </li>
+
+    <li class="tl__item">
+      <span class="tl__dot" aria-hidden="true"></span>
+      <article class="tl__card">
+        <div class="tl__box">
+          <time class="tl__date">ינואר 2025</time>
+          <p class="tl__text">משטרת גואטמלה עוצרת 2 מנהיגים נוספים</p>
+        </div>
+      </article>
+    </li>
+
+    <li class="tl__item">
+      <span class="tl__dot" aria-hidden="true"></span>
+      <article class="tl__card">
+        <div class="tl__box">
+          <time class="tl__date">אוקטובר 2025</time>
+          <p class="tl__text">10 משפחות מהכת בורחות להונדורס, כנראה בהוראת המנהיגים מהכלא</p>
+        </div>
+      </article>
+    </li>
+  </ol>
+</section>
+
+<script>
+  (function () {
+    var root = document.getElementById('tl-hist');
+    if (!root) return;
+
+    var items = root.querySelectorAll('.tl__item');
+    var list = root.querySelector('.tl__list');
+    var progress = root.querySelector('.tl__progress');
+    var itemArray = Array.prototype.slice.call(items);
+
+    var DESK_MIN_WIDTH = 640;   // רוחב מינימלי לפריסה של שני טורים
+    var GAP = 24;               // מרווח אנכי בין כרטיסים באותו צד
+    var MIN_CENTER_STEP = 40;   // מרחק מינימלי בין נקודות עוקבות על הקו
+    var STAGGER_MS = 250;       // השהיה בין כרטיסים שמופיעים יחד
+
+    var revealedMax = -1;       // האינדקס הגבוה ביותר שנחשף עד כה
+
+    // קו ההתקדמות מסתיים במרכז הנקודה האחרונה שנחשפה
+    function updateProgress() {
+      if (revealedMax < 0) {
+        progress.style.height = '0px';
+        return;
+      }
+      var it = itemArray[revealedMax];
+      progress.style.height = (it.offsetTop + it.offsetHeight / 2) + 'px';
+    }
+
+    // הצגה הדרגתית: כרטיסים שנכנסים לתצוגה באותה קבוצה מופיעים אחד אחרי השני
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        var visibleNow = entries
+          .filter(function (e) { return e.isIntersecting; })
+          .sort(function (a, b) {
+            return itemArray.indexOf(a.target) - itemArray.indexOf(b.target);
+          });
+
+        visibleNow.forEach(function (entry, k) {
+          var el = entry.target;
+          var idx = itemArray.indexOf(el);
+          el.style.setProperty('--stagger', (k * STAGGER_MS) + 'ms');
+          el.classList.add('is-visible');
+          if (idx > revealedMax) revealedMax = idx;
+          io.unobserve(el);
+        });
+
+        if (visibleNow.length) updateProgress();
+      }, { threshold: 0.2, rootMargin: '0px 0px -8% 0px' });
+      items.forEach(function (item) { io.observe(item); });
+    } else {
+      items.forEach(function (item) { item.classList.add('is-visible'); });
+      revealedMax = itemArray.length - 1;
+    }
+
+    // פריסת דסקטופ: כל כרטיס מוצב אנכית בצד שלו, ככל האפשר למעלה,
+    // כך שכרטיסים בצדדים מנוגדים חופפים בגובה במקום להשאיר רווח ריק
+    function layout() {
+      var desk = list.offsetWidth >= DESK_MIN_WIDTH &&
+                 window.matchMedia('(pointer: fine)').matches;
+      root.classList.toggle('tl--desk', desk);
+
+      if (!desk) {
+        list.style.height = '';
+        items.forEach(function (item) {
+          item.style.top = '';
+          item.removeAttribute('data-side');
+        });
+        updateProgress();
+        return;
+      }
+
+      var bottoms = { l: -Infinity, r: -Infinity };
+      var prevCenter = -Infinity;
+      var maxBottom = 0;
+
+      items.forEach(function (item, i) {
+        // אינדקס זוגי (1988, 2017...) מימין לקו, אי-זוגי משמאל
+        var side = (i % 2 === 0) ? 'r' : 'l';
+        var h = item.querySelector('.tl__card').offsetHeight;
+
+        var top = Math.max(
+          0,
+          bottoms[side] + GAP,
+          prevCenter + MIN_CENTER_STEP - h / 2
+        );
+
+        item.dataset.side = side;
+        item.style.top = top + 'px';
+
+        bottoms[side] = top + h;
+        prevCenter = top + h / 2;
+        maxBottom = Math.max(maxBottom, top + h);
+      });
+
+      list.style.height = maxBottom + 'px';
+      updateProgress();
+    }
+
+    window.addEventListener('resize', layout);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(layout);
+    }
+    window.addEventListener('load', layout);
+    layout();
+  })();
+</script>
+
+</body>
+</html>
